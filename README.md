@@ -1,39 +1,44 @@
-# Vessels Tracks API
+## Backend Assignment
+- Inside the project's directory, run
+	> docker-compose up -d
+	
+- After that, to run commands in the app container, run
+	> docker-compose exec marine_traffic bash
+	
+- To run the migrations and seed the table, run
+	> php artisan migrate:fresh --seed
+	
+- Finally, for the application to be able to access the log file, run
+	> chmod -R ugo+rw storage 
 
-Your task is to create a **RESTful API** that serves vessel tracks from a raw vessel positions data-source.
-The raw data is supplied as a JSON file that you must import to a database schema of your choice.
+By making either a post request on the endpoint
 
-Fields supplied are:
-* **mmsi**: unique vessel identifier
-* **status**: AIS vessel status
-* **station**: receiving station ID
-* **speed**: speed in knots x 10 (i.e. 10,1 knots is 101)
-* **lon**: longitude
-* **lat**: latitude
-* **course**: vessel's course over ground
-* **heading**: vessel's true heading
-* **rot**: vessel's rate of turn
-* **timestamp**: position timestamp
+	localhost:8000/api/shipPosition
+(the app runs on port 8000 by default)
 
-**The API end-point must:**
-* Support the following filters: 
-  * **mmsi** (single or multiple)
-  * **latitude** and **longitude range**
-  * as well as **time interval**.
-* Log incoming requests to a datastore of  your choice (plain text, database, third party service etc.)
-* Limit requests per user to **10/minute**. (Use the request remote IP as a user identifier)
-* Support the following content types:
-  * At least two of the following: application/json, application/vnd.api+json, application/ld+json, application/hal+json
-  * application/xml
-  * text/csv
+with the following parameters
 
-**Share your work:**
-* Fork this repo and create a pull request that contains your implementation in a new branch named after you.
+    "min_latitude" (required, float -90 to 90)
+    "max_latitude" (required, float -90 to 90)
+    "min_longtitude" (required, float -180 to 180)
+    "max_longtitude" (required, float -180 to 180)
+    "time_from" (required, integer)
+    "time_to" (required, integer)
+    "mmsi" (single integer value or array of integers)
+
+e.g
+
+    {"min_latitude" : "-42.1333500",
+    "max_latitude" : "42.7517800",
+    "min_longtitude" : "-180.4415000",
+    "max_longtitude" : "16.2518200",
+    "time_from" : "1372700220",
+    "time_to": "1372700460",
+    "mmsi" : "247039300"}
+    
+the app returns a JSON response which includes all ships included within the given coordinates, in the given time frame
+
+To run the tests, in the app container, run
+> php artisan test
 
 
-**Notes:** 
-* Please include your Tests with your source code
-* Include instructions
-* Feel free to use the framework, libraries of your choice or plain PHP to implement the assignment
-
-**Have fun!**
